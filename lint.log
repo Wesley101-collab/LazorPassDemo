@@ -1,0 +1,17 @@
+
+> lazorpass@0.1.0 lint
+> eslint
+
+
+C:\Users\ekreb\Documents\LazorPass\components\SendUSDC.tsx
+   5:64   warning  'createAssociatedTokenAccountInstruction' is defined but never used  @typescript-eslint/no-unused-vars
+   5:105  warning  'getAccount' is defined but never used                               @typescript-eslint/no-unused-vars
+  26:19   warning  'connection' is assigned a value but never used                      @typescript-eslint/no-unused-vars
+  66:23   error    Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\ekreb\Documents\LazorPass\components\TransactionHistory.tsx
+   4:22  warning  'PublicKey' is defined but never used     @typescript-eslint/no-unused-vars
+  10:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 6 problems (2 errors, 4 warnings)
+
