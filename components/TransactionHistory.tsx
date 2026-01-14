@@ -9,23 +9,37 @@ import { ExternalLink, ArrowRightLeft } from 'lucide-react';
 export default function TransactionHistory() {
     const { smartWalletPubkey } = useWallet();
     const [history, setHistory] = useState<ConfirmedSignatureInfo[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // Start true for initial load
     const isFetchingRef = useRef(false);
+    const hasLoadedRef = useRef(false);
 
     const fetchHistory = useCallback(async () => {
         if (!smartWalletPubkey || isFetchingRef.current) return;
 
         isFetchingRef.current = true;
-        setLoading(true);
+        // Only show loading on first fetch
+        if (!hasLoadedRef.current) {
+            setLoading(true);
+        }
+
         try {
             const connection = new Connection(LAZORKIT_CONFIG.rpcUrl);
-            const signatures = await connection.getSignaturesForAddress(
-                smartWalletPubkey,
-                { limit: 10 }
+
+            // Add timeout to prevent hanging forever
+            const timeoutPromise = new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout')), 5000)
             );
+
+            const signatures = await Promise.race([
+                connection.getSignaturesForAddress(smartWalletPubkey, { limit: 10 }),
+                timeoutPromise
+            ]);
+
             setHistory(signatures);
+            hasLoadedRef.current = true;
         } catch (err) {
-            console.error("Failed to fetch history", err);
+            console.warn("Failed to fetch history:", err);
+            hasLoadedRef.current = true; // Mark as loaded even on error to stop loading state
         } finally {
             setLoading(false);
             isFetchingRef.current = false;
@@ -33,9 +47,9 @@ export default function TransactionHistory() {
     }, [smartWalletPubkey]);
 
     useEffect(() => {
-        // Delay initial fetch to avoid rate limiting during mount
-        const initialTimeout = setTimeout(fetchHistory, 500);
-        // Poll every 30 seconds to avoid rate limiting
+        // Quick initial fetch
+        const initialTimeout = setTimeout(fetchHistory, 100);
+        // Poll every 30 seconds
         const interval = setInterval(fetchHistory, 30000);
         return () => {
             clearTimeout(initialTimeout);
