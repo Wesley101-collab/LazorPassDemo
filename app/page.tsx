@@ -14,7 +14,7 @@ export default function Home() {
             Demo
           </span>
         </div>
-        <a href="#" className="text-sm font-medium text-zinc-500 hover:text-white transition-colors">
+        <a href="https://github.com/Wesley101-collab/LazorPassDemo" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-zinc-500 hover:text-white transition-colors">
           GitHub
         </a>
       </header>
